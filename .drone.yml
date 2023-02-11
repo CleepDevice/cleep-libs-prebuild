@@ -16,7 +16,7 @@ clone:
   disable: true
 
 steps:
-- name: 
+- name: build-and-publish-pyzmq
   image: 192.168.1.125:5000/raspberrypios/buster:20211202
   environment:
     ID_ED25519:
