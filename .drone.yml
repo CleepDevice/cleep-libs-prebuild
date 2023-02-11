@@ -27,9 +27,9 @@ steps:
   - echo $DRONE_TAG | sed 's|pyzmq-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - echo $VERSION
-  - apt update -y
-  - apt upgrade -y
-  - apt install git cython3 -y
+  - apt update -qq -y
+  - apt upgrade -qq -y
+  - apt install -q git cython3 -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - git clone https://github.com/zeromq/pyzmq.git
