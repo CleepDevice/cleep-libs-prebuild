@@ -28,8 +28,8 @@ steps:
   - echo $DRONE_TAG | sed 's|pyzmq-\([0-9\.]*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - echo $VERSION
-  - apt update
-  - apt upgrade
+  - apt update -y
+  - apt upgrade -y
   - apt install git cython3 -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
