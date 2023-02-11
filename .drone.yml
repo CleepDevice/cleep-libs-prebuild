@@ -25,6 +25,9 @@ steps:
       from_secret: id_ed25519_pub
   commands:
   - printenv
+  - echo $DRONE_TAG | sed 's|pyzmq-\([0-9\.]*\).*|\1|' > version.txt
+  - export VERSION=`cat version.txt`
+  - echo $VERSION
   - apt update
   - apt upgrade
   - apt install git cython3 -y
