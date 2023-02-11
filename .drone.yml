@@ -39,7 +39,7 @@ steps:
   - python3 -m pip install -e .
   - python3 setup.py bdist_wheel
   - ls -lh dist
-  - cd
+  - cd ..
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
   - chmod 600 ~/.ssh/id_ed25519
