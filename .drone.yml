@@ -1,0 +1,57 @@
+kind: pipeline
+type: docker
+name: pyzmq
+
+platform:
+  arch: arm
+
+trigger:
+  ref:
+    - refs/tags/pyzmq-*
+
+concurrency:
+  limit: 1
+
+clone:
+  disable: true
+
+steps:
+- name: 
+  image: 192.168.1.125:5000/raspberrypios/buster:20211202
+  environment:
+    ID_ED25519:
+      from_secret: id_ed25519
+    ID_ED25519_PUB:
+      from_secret: id_ed25519_pub
+  commands:
+  - printenv
+  - apt update
+  - apt upgrade
+  - apt install git cython3 -y
+  - wget "https://bootstrap.pypa.io/get-pip.py"
+  - python3 get-pip.py
+  - git clone https://github.com/zeromq/pyzmq.git
+  - git fetch --all --tags
+  - cd pyzmq
+  - python3 -m pip install -e .
+  - python3 setup.py bdist_wheel
+  - ls -lh dist
+  - cd
+  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+  - chmod 600 ~/.ssh/id_ed25519
+  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+  - chmod 644 ~/.ssh/id_ed25519.pub
+  - git config --global user.email "drone@localhost.com"
+  - git config --global user.name "drone"
+  - ssh-keyscan github.com >> githubKey
+  - ssh-keygen -lf githubKey
+  - cat githubKey >> ~/.ssh/known_hosts
+  - rm githubKey
+  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - mkdir -p cleep-libs-prebuild/pyzmq
+  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/.
+  - cd cleep-libs-prebuild
+  - git add .
+  - git commit -m "Add pyzmq v"$VERSION
+  - git push -u origin HEAD
+
