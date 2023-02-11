@@ -24,8 +24,7 @@ steps:
     ID_ED25519_PUB:
       from_secret: id_ed25519_pub
   commands:
-  - printenv
-  - echo $DRONE_TAG | sed 's|pyzmq-\([0-9\.]*\).*|\1|' > version.txt
+  - echo $DRONE_TAG | sed 's|pyzmq-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - echo $VERSION
   - apt update -y
@@ -36,6 +35,7 @@ steps:
   - git clone https://github.com/zeromq/pyzmq.git
   - cd pyzmq
   - git fetch --all --tags
+  - git checkout tags/$VERSION -b branch$VERSION
   - python3 -m pip install -e .
   - python3 setup.py bdist_wheel
   - ls -lh dist
