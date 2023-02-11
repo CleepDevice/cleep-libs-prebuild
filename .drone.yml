@@ -34,8 +34,8 @@ steps:
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - git clone https://github.com/zeromq/pyzmq.git
-  - git fetch --all --tags
   - cd pyzmq
+  - git fetch --all --tags
   - python3 -m pip install -e .
   - python3 setup.py bdist_wheel
   - ls -lh dist
