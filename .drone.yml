@@ -114,7 +114,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - # GEVENT BUILD
-  - apt-get -qq install python3-dev -y
+  - apt-get -qq install python3-dev python3-cffi -y
   - python3 -m pip install virtualenv
   - virtualenv gevent-env
   - cd gevent-env
