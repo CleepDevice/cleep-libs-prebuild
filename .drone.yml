@@ -32,6 +32,7 @@ steps:
   - apt install -q git cython3 -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
+  - python3 -m pip install wheel packaging
   - git clone https://github.com/zeromq/pyzmq.git
   - cd pyzmq
   - git fetch --all --tags
@@ -59,3 +60,68 @@ steps:
   - git commit -m "Add pyzmq v"$VERSION
   - git push -u origin HEAD
 
+
+---
+kind: pipeline
+type: docker
+name: gevent
+
+platform:
+  arch: arm
+
+trigger:
+  ref:
+    - refs/tags/gevent-*
+
+concurrency:
+  limit: 1
+
+clone:
+  disable: true
+
+steps:
+- name: build-and-publish-gevent
+  image: 192.168.1.125:5000/raspberrypios/buster:20211202
+  environment:
+    ID_ED25519:
+      from_secret: id_ed25519
+    ID_ED25519_PUB:
+      from_secret: id_ed25519_pub
+  commands:
+  - echo $DRONE_TAG | sed 's|gevent-\(.*\).*|\1|' > version.txt
+  - export VERSION=`cat version.txt`
+  - echo $VERSION
+  - apt update -qq -y
+  - apt upgrade -qq -y
+  - apt install -q git 
+  - wget "https://bootstrap.pypa.io/get-pip.py"
+  - python3 get-pip.py
+  - python3 -m pip install wheel packaging virtualenv
+  - python3 -m venv gevent-env
+  - cd gevent-env
+  - . bin/activate
+  - git clone git@github.com:gevent/gevent.git
+  - git fetch --all --tags
+  - git checkout tags/$VERSION -b branch$VERSION
+  - pip install -r dev-requirements.txt
+  - python3 setup.py bdist_wheel
+  - ls -lh dist
+  - cd ..
+  - mkdir -p ~/.ssh
+  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+  - chmod 600 ~/.ssh/id_ed25519
+  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+  - chmod 644 ~/.ssh/id_ed25519.pub
+  - git config --global user.email "drone@localhost.com"
+  - git config --global user.name "drone"
+  - ssh-keyscan github.com >> githubKey
+  - ssh-keygen -lf githubKey
+  - cat githubKey >> ~/.ssh/known_hosts
+  - rm githubKey
+  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - mkdir -p cleep-libs-prebuild/pyzmq
+  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/.
+  - cd cleep-libs-prebuild
+  - git add .
+  - git commit -m "Add pyzmq v"$VERSION
+  - git push -u origin HEAD
