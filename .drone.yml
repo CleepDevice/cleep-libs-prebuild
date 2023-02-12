@@ -28,9 +28,9 @@ steps:
   - echo $DRONE_TAG | sed 's|pyzmq-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - # PREPARE SYSTEM
-  - apt -qq update -y
-  - apt -qq upgrade -y
-  - apt -qq install git cython3 python3-distutils -y
+  - apt-get -qq update -y
+  - apt-get -qq upgrade -y
+  - apt-get -qq install git cython3 python3-distutils -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - python3 -m pip install wheel packaging
@@ -96,20 +96,20 @@ steps:
   - echo $DRONE_TAG | sed 's|gevent-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - # PREPARE SYSTEM
-  - apt -qq update -y
-  - apt -qq upgrade -y
-  - apt -qq install git python3-distutils -y
+  - apt-get -qq update -y
+  - apt-get -qq upgrade -y
+  - apt-get -qq install git python3-distutils -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - # GEVENT BUILD
   - python3 -m pip install virtualenv
   - virtualenv gevent-env
-  - python3 -m pip install wheel packaging
+  - cd gevent-env
+  - git clone git@github.com:gevent/gevent.git
+  - . bin/activate
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - . "$HOME/.cargo/env"
-  - cd gevent-env
-  - . bin/activate
-  - git clone git@github.com:gevent/gevent.git
+  - python3 -m pip install wheel packaging
   - cd gevent
   - git fetch --all --tags
   - git checkout tags/$VERSION -b branch$VERSION
