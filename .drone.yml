@@ -97,7 +97,7 @@ steps:
   - export VERSION=`cat version.txt`
   - # PREPARE SYSTEM
   - apt-get -qq update -y
-  - apt-get -qq upgrade -y
+  - # apt-get -qq upgrade -y
   - apt-get -qq install git python3-distutils -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
@@ -122,7 +122,7 @@ steps:
   - . bin/activate
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - . "$HOME/.cargo/env"
-  - python3 -m pip install wheel packaging
+  - python3 -m pip install wheel packaging cffi
   - cd gevent
   - git fetch --all --tags
   - git checkout tags/$VERSION -b branch$VERSION
