@@ -27,6 +27,13 @@ steps:
   - # VERSION
   - echo $DRONE_TAG | sed 's|pyzmq-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
+  - # PREPARE SYSTEM
+  - apt-get -qq update -y
+  - apt-get -qq upgrade -y
+  - apt-get -qq install git cython3 python3-distutils -y
+  - wget "https://bootstrap.pypa.io/get-pip.py"
+  - python3 get-pip.py
+  - python3 -m pip install wheel packaging
   - # PREPARE SSH
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
@@ -39,13 +46,6 @@ steps:
   - ssh-keygen -lf githubKey
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git cython3 python3-distutils -y
-  - wget "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
-  - python3 -m pip install wheel packaging
   - # PYZMQ BUILD
   - git clone https://github.com/zeromq/pyzmq.git
   - cd pyzmq
@@ -95,6 +95,12 @@ steps:
   - # VERSION
   - echo $DRONE_TAG | sed 's|gevent-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
+  - # PREPARE SYSTEM
+  - apt-get -qq update -y
+  - apt-get -qq upgrade -y
+  - apt-get -qq install git python3-distutils -y
+  - wget "https://bootstrap.pypa.io/get-pip.py"
+  - python3 get-pip.py
   - # PREPARE SSH
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
@@ -107,12 +113,6 @@ steps:
   - ssh-keygen -lf githubKey
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git python3-distutils -y
-  - wget "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
   - # GEVENT BUILD
   - python3 -m pip install virtualenv
   - virtualenv gevent-env
