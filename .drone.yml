@@ -93,7 +93,7 @@ steps:
   - echo $VERSION
   - apt update -qq -y
   - apt upgrade -qq -y
-  - apt install -q git 
+  - apt install -q git -y
   - virtualenv gevent-env
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
