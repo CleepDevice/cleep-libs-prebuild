@@ -106,7 +106,7 @@ steps:
   - virtualenv gevent-env
   - python3 -m pip install wheel packaging
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - . "~/.cargo/env"
+  - . "$HOME/.cargo/env"
   - cd gevent-env
   - . bin/activate
   - git clone git@github.com:gevent/gevent.git
