@@ -57,7 +57,7 @@ steps:
   - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/.
   - cd cleep-libs-prebuild
   - git add .
-  - git commit -m "Add pyzmq v"$VERSION
+  - git commit -m "Add pyzmq "$VERSION
   - git push -u origin HEAD
 
 
@@ -94,18 +94,24 @@ steps:
   - apt update -qq -y
   - apt upgrade -qq -y
   - apt install -q git 
+  - virtualenv gevent-env
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - python3 -m pip install wheel packaging virtualenv
-  - python3 -m venv gevent-env
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y
+  - . "~/.cargo/env"
   - cd gevent-env
   - . bin/activate
   - git clone git@github.com:gevent/gevent.git
+  - cd gevent
   - git fetch --all --tags
   - git checkout tags/$VERSION -b branch$VERSION
-  - pip install -r dev-requirements.txt
+  - python3 -m pip install -r dev-requirements.txt
   - python3 setup.py bdist_wheel
   - ls -lh dist
+  - cd ..
+  - deactivate
+  - ls -lh gevent/dist/
   - cd ..
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
@@ -119,9 +125,10 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/pyzmq
-  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/.
+  - mkdir -p cleep-libs-prebuild/gevent
+  - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/.
   - cd cleep-libs-prebuild
   - git add .
-  - git commit -m "Add pyzmq v"$VERSION
+  - git commit -m "Add gevent "$VERSION
   - git push -u origin HEAD
+
