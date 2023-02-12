@@ -24,15 +24,17 @@ steps:
     ID_ED25519_PUB:
       from_secret: id_ed25519_pub
   commands:
+  - # VERSION
   - echo $DRONE_TAG | sed 's|pyzmq-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
-  - echo $VERSION
-  - apt update -qq -y
-  - apt upgrade -qq -y
+  - # PREPARE SYSTEM
+  - apt -qq update -y
+  - apt -qq upgrade -y
   - apt install -q git cython3 -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - python3 -m pip install wheel packaging
+  - # PYZMQ BUILD
   - git clone https://github.com/zeromq/pyzmq.git
   - cd pyzmq
   - git fetch --all --tags
@@ -41,6 +43,7 @@ steps:
   - python3 setup.py bdist_wheel
   - ls -lh dist
   - cd ..
+  - # CLEEP-LIBS-PREBUILD STUFF
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
   - chmod 600 ~/.ssh/id_ed25519
@@ -53,6 +56,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - # PYZMQ COPY
   - mkdir -p cleep-libs-prebuild/pyzmq
   - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/.
   - cd cleep-libs-prebuild
@@ -88,16 +92,19 @@ steps:
     ID_ED25519_PUB:
       from_secret: id_ed25519_pub
   commands:
+  - # VERSION
   - echo $DRONE_TAG | sed 's|gevent-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
-  - echo $VERSION
-  - apt update -qq -y
-  - apt upgrade -qq -y
+  - # PREPARE SYSTEM
+  - apt -qq update -y
+  - apt -qq upgrade -y
   - apt install -q git -y
-  - virtualenv gevent-env
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
-  - python3 -m pip install wheel packaging virtualenv
+  - # GEVENT BUILD
+  - python3 -m pip install virtualenv
+  - virtualenv gevent-env
+  - python3 -m pip install wheel packaging
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - . "~/.cargo/env"
   - cd gevent-env
@@ -113,6 +120,7 @@ steps:
   - deactivate
   - ls -lh gevent/dist/
   - cd ..
+  - # CLEEP-LIBS-PREBUILD STUFF
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
   - chmod 600 ~/.ssh/id_ed25519
@@ -125,6 +133,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - # GEVENT COPY
   - mkdir -p cleep-libs-prebuild/gevent
   - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/.
   - cd cleep-libs-prebuild
