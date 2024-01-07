@@ -30,7 +30,7 @@ steps:
   - # PREPARE SYSTEM
   - apt-get -qq update -y
   - apt-get -qq upgrade -y
-  - apt-get -qq install git cython3 python3-distutils -y
+  - apt-get -qq install git cython3 python3-distutils python3-dev -y
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - python3 -m pip install wheel packaging
