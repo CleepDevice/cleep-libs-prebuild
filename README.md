@@ -16,6 +16,8 @@ Please check available versions on respective directories (gevent, pyzmq...)
 # How to run
 
 Simply tag version to build
-* gevent-xx.xx.xx
-* pyzmq-xx.xx.xx
+> [lib-name]-[tag-name]
+
+* lib-name must be the name of supported lib (gevent, pyzmq, ...)
+* tab-name must the exact name of version to build (gevent is xx.xx.xx while pyzmq is vxx.xx.xx)
 
