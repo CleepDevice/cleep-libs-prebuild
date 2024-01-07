@@ -1,6 +1,6 @@
 # Cleep-libs-prebuild
 
-This repo is used to store prebuilt version of some Cleep dependencies that kill installation duration due to need to compile it for ARM env.
+This repo is used to store prebuilt version of some Cleep dependencies that kill installation duration due to the need to compile it for ARM env.
 
 # Supported dependencies
 
