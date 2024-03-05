@@ -53,16 +53,16 @@ steps:
   - git clone https://github.com/zeromq/pyzmq.git
   - cd pyzmq
   - git fetch --all --tags
-  - git checkout tags/$DISTRI/$VERSION -b branch-$DISTRI-$VERSION
+  - git checkout tags/$VERSION -b branch-$VERSION
   - python3 -m pip install -e .
   - python3 setup.py bdist_wheel
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
   - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/$DISTRI/pyzmq
-  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/$DISTRI/pyzmq/.
-  - cd cleep-libs-prebuild/$DISTRI
+  - mkdir -p cleep-libs-prebuild/pyzmq/$DISTRI/
+  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/$DISTRI/.
+  - cd cleep-libs-prebuild
   - git add .
   - git commit -m "Add pyzmq "$DISTRI/$VERSION
   - git push -u origin HEAD
@@ -131,7 +131,7 @@ steps:
   - python3 -m pip install wheel packaging docutils==0.20.1
   - cd gevent
   - git fetch --all --tags
-  - git checkout tags/$DISTRI/$VERSION -b branch-$DISTRI-$VERSION
+  - git checkout tags/$VERSION -b branch-$VERSION
   - python3 -m pip install -r dev-requirements.txt
   - python3 setup.py bdist_wheel
   - ls -lh dist
@@ -141,8 +141,8 @@ steps:
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
   - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/gevent
-  - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/.
+  - mkdir -p cleep-libs-prebuild/gevent/$DISTRI
+  - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/$DISTRI/.
   - cd cleep-libs-prebuild
   - git add .
   - git commit -m "Add gevent "$DISTRI/$VERSION
