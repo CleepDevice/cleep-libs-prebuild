@@ -17,7 +17,7 @@ clone:
 
 steps:
 - name: build-and-publish-pyzmq
-  image: 192.168.1.125:5000/raspberrypios/buster:20211202
+  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
   environment:
     ID_ED25519:
       from_secret: id_ed25519
@@ -85,7 +85,7 @@ clone:
 
 steps:
 - name: build-and-publish-gevent
-  image: 192.168.1.125:5000/raspberrypios/buster:20211202
+  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
   environment:
     ID_ED25519:
       from_secret: id_ed25519
