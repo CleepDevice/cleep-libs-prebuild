@@ -96,6 +96,8 @@ steps:
       from_secret: id_ed25519_pub
   commands:
   - # VERSION
+  - printenv
+  - echo $DRONE_COMMIT_MESSAGE
   - echo $DRONE_TAG | sed 's|.*/gevent-\(.*\).*|\1|' > version.txt
   - export VERSION=`cat version.txt`
   - # DISTRI
