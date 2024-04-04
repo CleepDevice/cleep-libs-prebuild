@@ -186,8 +186,8 @@ steps:
   - export DISTRI=`cat distri.txt`
   - # PREPARE SYSTEM
   - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-pip python3-dev -y python3-venv
+  - # apt-get -qq upgrade -y
+  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-pip python3-dev -y python3-venv cmake
   - wget "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
   - python3 -m pip install build
