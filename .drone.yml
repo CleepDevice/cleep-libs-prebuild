@@ -150,3 +150,74 @@ steps:
   - git commit -m "Add gevent "$DISTRI/$VERSION
   - git push -u origin HEAD
 
+
+
+kind: pipeline
+type: docker
+name: scipy
+
+platform:
+  arch: arm
+
+trigger:
+  ref:
+    - refs/tags/*/scipy-*
+
+concurrency:
+  limit: 1
+
+clone:
+  disable: true
+
+steps:
+- name: build-and-publish-scipy
+  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
+  environment:
+    ID_ED25519:
+      from_secret: id_ed25519
+    ID_ED25519_PUB:
+      from_secret: id_ed25519_pub
+  commands:
+  - # VERSION
+  - echo $DRONE_TAG | sed 's|.*/scipy-\(.*\).*|\1|' > version.txt
+  - export VERSION=`cat version.txt`
+  - # DISTRI
+  - echo $DRONE_TAG | sed 's|\(.*\)/scipy.*|\1|' > distri.txt
+  - export DISTRI=`cat distri.txt`
+  - # PREPARE SYSTEM
+  - apt-get -qq update -y
+  - apt-get -qq upgrade -y
+  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-pip python3-dev -y python3-venv
+  - wget "https://bootstrap.pypa.io/get-pip.py"
+  - python3 get-pip.py
+  - python3 -m pip install build
+  - # PREPARE SSH
+  - mkdir -p ~/.ssh
+  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+  - chmod 600 ~/.ssh/id_ed25519
+  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+  - chmod 644 ~/.ssh/id_ed25519.pub
+  - git config --global user.email "drone@localhost.com"
+  - git config --global user.name "drone"
+  - ssh-keyscan github.com >> githubKey
+  - ssh-keygen -lf githubKey
+  - cat githubKey >> ~/.ssh/known_hosts
+  - rm githubKey
+  - # SCIPY BUILD
+  - git clone https://github.com/scipy/scipy.git
+  - cd scipy
+  - git fetch --all --tags
+  - git checkout tags/$VERSION -b branch-$VERSION
+  - git submodule update --init
+  - python3 -m pip install -e .
+  - python3 -m build --wheel
+  - ls -lh dist
+  - cd ..
+  - # CLEEP-LIBS-PREBUILD STUFF
+  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - mkdir -p cleep-libs-prebuild/scipy/$DISTRI/
+  - cp -a scipy/dist/scipy-*.whl cleep-libs-prebuild/scipy/$DISTRI/.
+  - cd cleep-libs-prebuild
+  - git add .
+  - git commit -m "Add scipy "$DISTRI/$VERSION
+  - git push -u origin HEAD
