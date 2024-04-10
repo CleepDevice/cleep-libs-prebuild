@@ -260,6 +260,7 @@ steps:
   - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-dev libffi-dev libssl-dev
   - wget -q "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
+  - python3 -m pip install cython
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - # PREPARE SSH
   - mkdir -p ~/.ssh
