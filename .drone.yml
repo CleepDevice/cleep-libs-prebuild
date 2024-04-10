@@ -281,7 +281,7 @@ steps:
   - . "$HOME/.cargo/env"
   - pip install -r release_requirements.txt
   - git submodule update --init
-  - pip install .
+  - python3 setup.py bdist_wheel
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
