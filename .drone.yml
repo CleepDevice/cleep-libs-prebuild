@@ -257,10 +257,10 @@ steps:
   - # PREPARE SYSTEM
   - apt-get -qq update -y
   - apt-get -qq upgrade -y
-  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-dev
+  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-dev libffi-dev libssl-dev
   - wget -q "https://bootstrap.pypa.io/get-pip.py"
   - python3 get-pip.py
-  - python3 -m pip install build
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - # PREPARE SSH
   - mkdir -p ~/.ssh
   - echo "$ID_ED25519" > ~/.ssh/id_ed25519
@@ -278,8 +278,10 @@ steps:
   - cd numpy
   - git fetch --quiet --all --tags
   - git checkout tags/$VERSION -b branch-$VERSION
+  - . "$HOME/.cargo/env"
+  - pip install -r release_requirements.txt
   - git submodule update --init
-  - python3 -m build --wheel
+  - pip install .
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
