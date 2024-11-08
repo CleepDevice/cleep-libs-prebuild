@@ -50,7 +50,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - # PYZMQ BUILD
-  - git clone https://github.com/zeromq/pyzmq.git
+  - git clone --ipv4 https://github.com/zeromq/pyzmq.git
   - cd pyzmq
   - git fetch --all --tags
   - git checkout tags/$VERSION -b branch-$VERSION
@@ -59,7 +59,7 @@ steps:
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
   - mkdir -p cleep-libs-prebuild/pyzmq/$DISTRI/
   - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/$DISTRI/.
   - cd cleep-libs-prebuild
@@ -125,7 +125,7 @@ steps:
   - python3 -m pip install virtualenv
   - virtualenv gevent-env
   - cd gevent-env
-  - git clone git@github.com:gevent/gevent.git
+  - git clone --ipv4 git@github.com:gevent/gevent.git
   - . bin/activate
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - . "$HOME/.cargo/env"
@@ -141,7 +141,7 @@ steps:
   - ls -lh gevent/dist/
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
   - mkdir -p cleep-libs-prebuild/gevent/$DISTRI
   - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/$DISTRI/.
   - cd cleep-libs-prebuild
@@ -203,7 +203,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - # SCIPY BUILD
-  - git clone --depth=1 https://github.com/scipy/scipy.git
+  - git clone --ipv4 --depth=1 https://github.com/scipy/scipy.git
   - cd scipy
   - git fetch --quiet --all --tags
   - git checkout tags/$VERSION -b branch-$VERSION
@@ -212,7 +212,7 @@ steps:
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
   - mkdir -p cleep-libs-prebuild/scipy/$DISTRI/
   - cp -a scipy/dist/scipy-*.whl cleep-libs-prebuild/scipy/$DISTRI/.
   - cd cleep-libs-prebuild
@@ -276,7 +276,7 @@ steps:
   - cat githubKey >> ~/.ssh/known_hosts
   - rm githubKey
   - # NUMPY BUILD
-  - git clone --depth=1 https://github.com/numpy/numpy.git
+  - git clone --ipv4 --depth=1 https://github.com/numpy/numpy.git
   - cd numpy
   - git fetch --quiet --all --tags
   - git checkout tags/$VERSION -b branch-$VERSION
@@ -287,7 +287,7 @@ steps:
   - ls -lh dist
   - cd ..
   - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone git@github.com:CleepDevice/cleep-libs-prebuild.git
+  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
   - mkdir -p cleep-libs-prebuild/numpy/$DISTRI/
   - cp -a numpy/dist/numpy-*.whl cleep-libs-prebuild/numpy/$DISTRI/.
   - cd cleep-libs-prebuild
