@@ -3,70 +3,69 @@ type: docker
 name: pyzmq
 
 platform:
-  arch: arm
+    arch: arm
 
 trigger:
-  ref:
-    - refs/tags/*/pyzmq-*
+    ref:
+        - refs/tags/*/pyzmq-*
 
 concurrency:
-  limit: 1
+    limit: 1
 
 clone:
-  disable: true
+    disable: true
 
 steps:
-- name: build-and-publish-pyzmq
-  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
-  environment:
-    ID_ED25519:
-      from_secret: id_ed25519
-    ID_ED25519_PUB:
-      from_secret: id_ed25519_pub
-  commands:
-  - # VERSION
-  - echo $DRONE_TAG | sed 's|.*/pyzmq-\(.*\).*|\1|' > version.txt
-  - export VERSION=`cat version.txt`
-  - # DISTRI
-  - echo $DRONE_TAG | sed 's|\(.*\)/pyzmq.*|\1|' > distri.txt
-  - export DISTRI=`cat distri.txt`
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git cython3 python3-distutils python3-dev -y
-  - wget "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
-  - python3 -m pip install wheel packaging
-  - # PREPARE SSH
-  - mkdir -p ~/.ssh
-  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
-  - chmod 600 ~/.ssh/id_ed25519
-  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
-  - chmod 644 ~/.ssh/id_ed25519.pub
-  - git config --global user.email "drone@localhost.com"
-  - git config --global user.name "drone"
-  - ssh-keyscan github.com >> githubKey
-  - ssh-keygen -lf githubKey
-  - cat githubKey >> ~/.ssh/known_hosts
-  - rm githubKey
-  - # PYZMQ BUILD
-  - git clone --ipv4 https://github.com/zeromq/pyzmq.git
-  - cd pyzmq
-  - git fetch --all --tags
-  - git checkout tags/$VERSION -b branch-$VERSION
-  - python3 -m pip install -e .
-  - python3 setup.py bdist_wheel
-  - ls -lh dist
-  - cd ..
-  - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/pyzmq/$DISTRI/
-  - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/$DISTRI/.
-  - cd cleep-libs-prebuild
-  - git add .
-  - git commit -m "Add pyzmq "$DISTRI/$VERSION
-  - git push -u origin HEAD
-
+    - name: build-and-publish-pyzmq
+      image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
+      environment:
+          ID_ED25519:
+              from_secret: id_ed25519
+          ID_ED25519_PUB:
+              from_secret: id_ed25519_pub
+      commands:
+          -  # VERSION
+          - echo $DRONE_TAG | sed 's|.*/pyzmq-\(.*\).*|\1|' > version.txt
+          - export VERSION=`cat version.txt`
+          -  # DISTRI
+          - echo $DRONE_TAG | sed 's|\(.*\)/pyzmq.*|\1|' > distri.txt
+          - export DISTRI=`cat distri.txt`
+          -  # PREPARE SYSTEM
+          - apt-get -qq update -y
+          - apt-get -qq upgrade -y
+          - apt-get -qq install git cython3 python3-distutils python3-dev -y
+          - wget "https://bootstrap.pypa.io/get-pip.py"
+          - python3 get-pip.py
+          - python3 -m pip install wheel packaging
+          -  # PREPARE SSH
+          - mkdir -p ~/.ssh
+          - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+          - chmod 600 ~/.ssh/id_ed25519
+          - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+          - chmod 644 ~/.ssh/id_ed25519.pub
+          - git config --global user.email "drone@localhost.com"
+          - git config --global user.name "drone"
+          - ssh-keyscan github.com >> githubKey
+          - ssh-keygen -lf githubKey
+          - cat githubKey >> ~/.ssh/known_hosts
+          - rm githubKey
+          -  # PYZMQ BUILD
+          - git clone --ipv4 https://github.com/zeromq/pyzmq.git
+          - cd pyzmq
+          - git fetch --all --tags
+          - git checkout tags/$VERSION -b branch-$VERSION
+          - python3 -m pip install -e .
+          - python3 setup.py bdist_wheel
+          - ls -lh dist
+          - cd ..
+          -  # CLEEP-LIBS-PREBUILD STUFF
+          - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
+          - mkdir -p cleep-libs-prebuild/pyzmq/$DISTRI/
+          - cp -a pyzmq/dist/pyzmq-*.whl cleep-libs-prebuild/pyzmq/$DISTRI/.
+          - cd cleep-libs-prebuild
+          - git add .
+          - git commit -m "Add pyzmq "$DISTRI/$VERSION
+          - git push -u origin HEAD
 
 ---
 kind: pipeline
@@ -74,81 +73,80 @@ type: docker
 name: gevent
 
 platform:
-  arch: arm
+    arch: arm
 
 trigger:
-  ref:
-    - refs/tags/*/gevent-*
+    ref:
+        - refs/tags/*/gevent-*
 
 concurrency:
-  limit: 1
+    limit: 1
 
 clone:
-  disable: true
+    disable: true
 
 steps:
-- name: build-and-publish-gevent
-  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
-  environment:
-    ID_ED25519:
-      from_secret: id_ed25519
-    ID_ED25519_PUB:
-      from_secret: id_ed25519_pub
-  commands:
-  - # VERSION
-  - echo $DRONE_COMMIT_MESSAGE
-  - echo $DRONE_TAG | sed 's|.*/gevent-\(.*\).*|\1|' > version.txt
-  - export VERSION=`cat version.txt`
-  - # DISTRI
-  - echo $DRONE_TAG | sed 's|\(.*\)/gevent.*|\1|' > distri.txt
-  - export DISTRI=`cat distri.txt`
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - # apt-get -qq upgrade -y
-  - apt-get -qq install git python3-dev python3-distutils -y
-  - wget "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
-  - # PREPARE SSH
-  - mkdir -p ~/.ssh
-  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
-  - chmod 600 ~/.ssh/id_ed25519
-  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
-  - chmod 644 ~/.ssh/id_ed25519.pub
-  - git config --global user.email "drone@localhost.com"
-  - git config --global user.name "drone"
-  - ssh-keyscan github.com >> githubKey
-  - ssh-keygen -lf githubKey
-  - cat githubKey >> ~/.ssh/known_hosts
-  - rm githubKey
-  - # GEVENT BUILD
-  - apt-get -qq install python3-dev python3-cffi libffi-dev libssl-dev -y
-  - python3 -m pip install virtualenv
-  - virtualenv gevent-env
-  - cd gevent-env
-  - git clone --ipv4 git@github.com:gevent/gevent.git
-  - . bin/activate
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - . "$HOME/.cargo/env"
-  - python3 -m pip install wheel packaging docutils==0.20.1
-  - cd gevent
-  - git fetch --all --tags
-  - git checkout tags/$VERSION -b branch-$VERSION
-  - python3 -m pip install -r dev-requirements.txt
-  - python3 setup.py bdist_wheel
-  - ls -lh dist
-  - cd ..
-  - deactivate
-  - ls -lh gevent/dist/
-  - cd ..
-  - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/gevent/$DISTRI
-  - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/$DISTRI/.
-  - cd cleep-libs-prebuild
-  - git add .
-  - git commit -m "Add gevent "$DISTRI/$VERSION
-  - git push -u origin HEAD
-
+    - name: build-and-publish-gevent
+      image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
+      environment:
+          ID_ED25519:
+              from_secret: id_ed25519
+          ID_ED25519_PUB:
+              from_secret: id_ed25519_pub
+      commands:
+          -  # VERSION
+          - echo $DRONE_COMMIT_MESSAGE
+          - echo $DRONE_TAG | sed 's|.*/gevent-\(.*\).*|\1|' > version.txt
+          - export VERSION=`cat version.txt`
+          -  # DISTRI
+          - echo $DRONE_TAG | sed 's|\(.*\)/gevent.*|\1|' > distri.txt
+          - export DISTRI=`cat distri.txt`
+          -  # PREPARE SYSTEM
+          - apt-get -qq update -y
+          -  # apt-get -qq upgrade -y
+          - apt-get -qq install git python3-dev python3-distutils -y
+          - wget "https://bootstrap.pypa.io/get-pip.py"
+          - python3 get-pip.py
+          -  # PREPARE SSH
+          - mkdir -p ~/.ssh
+          - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+          - chmod 600 ~/.ssh/id_ed25519
+          - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+          - chmod 644 ~/.ssh/id_ed25519.pub
+          - git config --global user.email "drone@localhost.com"
+          - git config --global user.name "drone"
+          - ssh-keyscan github.com >> githubKey
+          - ssh-keygen -lf githubKey
+          - cat githubKey >> ~/.ssh/known_hosts
+          - rm githubKey
+          -  # GEVENT BUILD
+          - apt-get -qq install python3-dev python3-cffi libffi-dev libssl-dev -y
+          - python3 -m pip install virtualenv
+          - virtualenv gevent-env
+          - cd gevent-env
+          - git clone --ipv4 git@github.com:gevent/gevent.git
+          - . bin/activate
+          - curl https://sh.rustup.rs -sSf | sh -s -- -y
+          - . "$HOME/.cargo/env"
+          - python3 -m pip install wheel packaging docutils==0.20.1
+          - cd gevent
+          - git fetch --all --tags
+          - git checkout tags/$VERSION -b branch-$VERSION
+          - python3 -m pip install -r dev-requirements.txt
+          - python3 setup.py bdist_wheel
+          - ls -lh dist
+          - cd ..
+          - deactivate
+          - ls -lh gevent/dist/
+          - cd ..
+          -  # CLEEP-LIBS-PREBUILD STUFF
+          - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
+          - mkdir -p cleep-libs-prebuild/gevent/$DISTRI
+          - cp -a gevent-env/gevent/dist/gevent-*.whl cleep-libs-prebuild/gevent/$DISTRI/.
+          - cd cleep-libs-prebuild
+          - git add .
+          - git commit -m "Add gevent "$DISTRI/$VERSION
+          - git push -u origin HEAD
 
 ---
 kind: pipeline
@@ -156,70 +154,69 @@ type: docker
 name: scipy
 
 platform:
-  arch: arm
+    arch: arm
 
 trigger:
-  ref:
-    - refs/tags/*/scipy-*
+    ref:
+        - refs/tags/*/scipy-*
 
 concurrency:
-  limit: 1
+    limit: 1
 
 clone:
-  disable: true
+    disable: true
 
 steps:
-- name: build-and-publish-scipy
-  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
-  environment:
-    ID_ED25519:
-      from_secret: id_ed25519
-    ID_ED25519_PUB:
-      from_secret: id_ed25519_pub
-  commands:
-  - # VERSION
-  - echo $DRONE_TAG | sed 's|.*/scipy-\(.*\).*|\1|' > version.txt
-  - export VERSION=`cat version.txt`
-  - # DISTRI
-  - echo $DRONE_TAG | sed 's|\(.*\)/scipy.*|\1|' > distri.txt
-  - export DISTRI=`cat distri.txt`
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-pip python3-dev python3-venv cmake libatlas-base-dev -y
-  - wget -q "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
-  - python3 -m pip install build
-  - # PREPARE SSH
-  - mkdir -p ~/.ssh
-  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
-  - chmod 600 ~/.ssh/id_ed25519
-  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
-  - chmod 644 ~/.ssh/id_ed25519.pub
-  - git config --global user.email "drone@localhost.com"
-  - git config --global user.name "drone"
-  - ssh-keyscan github.com >> githubKey
-  - ssh-keygen -lf githubKey
-  - cat githubKey >> ~/.ssh/known_hosts
-  - rm githubKey
-  - # SCIPY BUILD
-  - git clone --ipv4 --depth=1 https://github.com/scipy/scipy.git
-  - cd scipy
-  - git fetch --quiet --all --tags
-  - git checkout tags/$VERSION -b branch-$VERSION
-  - git submodule update --init
-  - python3 -m build --wheel
-  - ls -lh dist
-  - cd ..
-  - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/scipy/$DISTRI/
-  - cp -a scipy/dist/scipy-*.whl cleep-libs-prebuild/scipy/$DISTRI/.
-  - cd cleep-libs-prebuild
-  - git add .
-  - git commit -m "Add scipy "$DISTRI/$VERSION
-  - git push -u origin HEAD
-
+    - name: build-and-publish-scipy
+      image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
+      environment:
+          ID_ED25519:
+              from_secret: id_ed25519
+          ID_ED25519_PUB:
+              from_secret: id_ed25519_pub
+      commands:
+          -  # VERSION
+          - echo $DRONE_TAG | sed 's|.*/scipy-\(.*\).*|\1|' > version.txt
+          - export VERSION=`cat version.txt`
+          -  # DISTRI
+          - echo $DRONE_TAG | sed 's|\(.*\)/scipy.*|\1|' > distri.txt
+          - export DISTRI=`cat distri.txt`
+          -  # PREPARE SYSTEM
+          - apt-get -qq update -y
+          - apt-get -qq upgrade -y
+          - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-pip python3-dev python3-venv cmake libatlas-base-dev -y
+          - wget -q "https://bootstrap.pypa.io/get-pip.py"
+          - python3 get-pip.py
+          - python3 -m pip install build
+          -  # PREPARE SSH
+          - mkdir -p ~/.ssh
+          - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+          - chmod 600 ~/.ssh/id_ed25519
+          - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+          - chmod 644 ~/.ssh/id_ed25519.pub
+          - git config --global user.email "drone@localhost.com"
+          - git config --global user.name "drone"
+          - ssh-keyscan github.com >> githubKey
+          - ssh-keygen -lf githubKey
+          - cat githubKey >> ~/.ssh/known_hosts
+          - rm githubKey
+          -  # SCIPY BUILD
+          - git clone --ipv4 --depth=1 https://github.com/scipy/scipy.git
+          - cd scipy
+          - git fetch --quiet --all --tags
+          - git checkout tags/$VERSION -b branch-$VERSION
+          - git submodule update --init
+          - python3 -m build --wheel
+          - ls -lh dist
+          - cd ..
+          -  # CLEEP-LIBS-PREBUILD STUFF
+          - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
+          - mkdir -p cleep-libs-prebuild/scipy/$DISTRI/
+          - cp -a scipy/dist/scipy-*.whl cleep-libs-prebuild/scipy/$DISTRI/.
+          - cd cleep-libs-prebuild
+          - git add .
+          - git commit -m "Add scipy "$DISTRI/$VERSION
+          - git push -u origin HEAD
 
 ---
 kind: pipeline
@@ -227,70 +224,70 @@ type: docker
 name: numpy
 
 platform:
-  arch: arm
+    arch: arm
 
 trigger:
-  ref:
-    - refs/tags/*/numpy-*
+    ref:
+        - refs/tags/*/numpy-*
 
 concurrency:
-  limit: 1
+    limit: 1
 
 clone:
-  disable: true
+    disable: true
 
 steps:
-- name: build-and-publish-numpy
-  image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
-  environment:
-    ID_ED25519:
-      from_secret: id_ed25519
-    ID_ED25519_PUB:
-      from_secret: id_ed25519_pub
-  commands:
-  - # VERSION
-  - echo $DRONE_TAG | sed 's|.*/numpy-\(.*\).*|\1|' > version.txt
-  - export VERSION=`cat version.txt`
-  - # DISTRI
-  - echo $DRONE_TAG | sed 's|\(.*\)/numpy.*|\1|' > distri.txt
-  - export DISTRI=`cat distri.txt`
-  - # PREPARE SYSTEM
-  - apt-get -qq update -y
-  - apt-get -qq upgrade -y
-  - apt-get -qq install git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-dev libffi-dev libssl-dev
-  - wget -q "https://bootstrap.pypa.io/get-pip.py"
-  - python3 get-pip.py
-  - # cython3 not compatible with numpy<1.26
-  - python3 -m pip install "cython<3"
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - # PREPARE SSH
-  - mkdir -p ~/.ssh
-  - echo "$ID_ED25519" > ~/.ssh/id_ed25519
-  - chmod 600 ~/.ssh/id_ed25519
-  - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
-  - chmod 644 ~/.ssh/id_ed25519.pub
-  - git config --global user.email "drone@localhost.com"
-  - git config --global user.name "drone"
-  - ssh-keyscan github.com >> githubKey
-  - ssh-keygen -lf githubKey
-  - cat githubKey >> ~/.ssh/known_hosts
-  - rm githubKey
-  - # NUMPY BUILD
-  - git clone --ipv4 --depth=1 https://github.com/numpy/numpy.git
-  - cd numpy
-  - git fetch --quiet --all --tags
-  - git checkout tags/$VERSION -b branch-$VERSION
-  - . "$HOME/.cargo/env"
-  - pip install -r release_requirements.txt
-  - git submodule update --init
-  - python3 setup.py bdist_wheel
-  - ls -lh dist
-  - cd ..
-  - # CLEEP-LIBS-PREBUILD STUFF
-  - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
-  - mkdir -p cleep-libs-prebuild/numpy/$DISTRI/
-  - cp -a numpy/dist/numpy-*.whl cleep-libs-prebuild/numpy/$DISTRI/.
-  - cd cleep-libs-prebuild
-  - git add .
-  - git commit -m "Add numpy "$DISTRI/$VERSION
-  - git push -u origin HEAD
+    - name: build-and-publish-numpy
+      image: 192.168.1.125:5000/raspberrypios/bullseye:20231205
+      environment:
+          ID_ED25519:
+              from_secret: id_ed25519
+          ID_ED25519_PUB:
+              from_secret: id_ed25519_pub
+      commands:
+          -  # VERSION
+          - echo $DRONE_TAG | sed 's|.*/numpy-\(.*\).*|\1|' > version.txt
+          - export VERSION=`cat version.txt`
+          -  # DISTRI
+          - echo $DRONE_TAG | sed 's|\(.*\)/numpy.*|\1|' > distri.txt
+          - export DISTRI=`cat distri.txt`
+          -  # PREPARE SYSTEM
+          - apt-get -qq update -y
+          - apt-get -qq upgrade -y
+          - apt-get -qq install -y git gcc g++ gfortran libopenblas-dev liblapack-dev pkg-config python3-dev libffi-dev libssl-dev
+          - wget -q "https://bootstrap.pypa.io/get-pip.py"
+          - python3 get-pip.py
+          -  # cython3 not compatible with numpy<1.26
+          - python3 -m pip install "cython<3" "setuptools<60"
+          - curl https://sh.rustup.rs -sSf | sh -s -- -y
+          -  # PREPARE SSH
+          - mkdir -p ~/.ssh
+          - echo "$ID_ED25519" > ~/.ssh/id_ed25519
+          - chmod 600 ~/.ssh/id_ed25519
+          - echo "$ID_ED25519_PUB" > ~/.ssh/id_ed25519.pub
+          - chmod 644 ~/.ssh/id_ed25519.pub
+          - git config --global user.email "drone@localhost.com"
+          - git config --global user.name "drone"
+          - ssh-keyscan github.com >> githubKey
+          - ssh-keygen -lf githubKey
+          - cat githubKey >> ~/.ssh/known_hosts
+          - rm githubKey
+          -  # NUMPY BUILD
+          - git clone --ipv4 --depth=1 https://github.com/numpy/numpy.git
+          - cd numpy
+          - git fetch --quiet --all --tags
+          - git checkout tags/$VERSION -b branch-$VERSION
+          - . "$HOME/.cargo/env"
+          - pip install -r release_requirements.txt
+          - git submodule update --init
+          - python3 setup.py bdist_wheel
+          - ls -lh dist
+          - cd ..
+          -  # CLEEP-LIBS-PREBUILD STUFF
+          - git clone --ipv4 git@github.com:CleepDevice/cleep-libs-prebuild.git
+          - mkdir -p cleep-libs-prebuild/numpy/$DISTRI/
+          - cp -a numpy/dist/numpy-*.whl cleep-libs-prebuild/numpy/$DISTRI/.
+          - cd cleep-libs-prebuild
+          - git add .
+          - git commit -m "Add numpy "$DISTRI/$VERSION
+          - git push -u origin HEAD
